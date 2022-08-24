@@ -15,24 +15,23 @@
 const dayjs = require('dayjs'),
 	glob = require('tiny-glob'),
 	fs = require('fs'),
-	dateOrder = require('date-order');
-
-const validateOrThrow = require('validate-or-throw');
+	dateOrder = require('date-order'),
+	lineByLine = require('n-readlines');
 
 // toObject plugin
 dayjs.extend(require('dayjs/plugin/toObject'));
+
+// sort numbers...
 const numSort = (a, b) => a - b;
+//validators
+const optsValidator = require('./lib/validate/opts');
+const listValidator = require('./lib/validate/list');
+const readValidator = require('./lib/validate/read');
 
 class GetLogs {
 	constructor(opts) {
-		let schema = {
-			logsDir: {
-				type: 'string',
-			},
-		};
-
 		// validate
-		validateOrThrow(opts, schema);
+		optsValidator.validate(opts);
 
 		//
 		if (
@@ -53,7 +52,7 @@ class GetLogs {
 	}
 
 	#make_glob_pattern(opts) {
-		const { format, duration } = opts;
+		const { duration, nameFormat } = opts;
 		const periods = {
 			H: 'hour',
 			D: 'day',
@@ -66,8 +65,9 @@ class GetLogs {
 
 		//
 		let m = duration.match(/([0-9]+)\s*([A-Z])/);
-		//console.log(m);
-		if (!m) throw new Error('Wrong period formatting');
+
+		if (!m) throw new Error('Wrong duration formatting');
+
 		let period = periods[m[2]] || 'day';
 		let count = m[1];
 		let since = dayjs().subtract(count, period);
@@ -83,7 +83,7 @@ class GetLogs {
 			year: new Set(),
 		};
 
-        // console.log({m, count, period, since});
+		// console.log({m, count, period, since});
 
 		while ((d = now.subtract(daysCount++, 'days')) && d.isAfter(since)) {
 			o = d.toObject();
@@ -102,7 +102,7 @@ class GetLogs {
 
 		// now make the glob string...
 		// 1st we get order of pattern
-		let date_order = dateOrder(format);
+		let date_order = dateOrder(this.options.dateFormat);
 		let orderedPat = [];
 
 		for (let dateComp of date_order) {
@@ -111,25 +111,16 @@ class GetLogs {
 			}
 		}
 
-		this.globPattern = '*' + orderedPat.join('-') + '*';
+		// make final glob pattern
+		this.globPattern = nameFormat.replace(
+			/\{date\}/i,
+			orderedPat.join('-')
+		);
 	}
 
-	async load(opts) {
-		let schema = {
-			duration: {
-				type: 'string',
-				uppercase: true,
-				pattern: /[0-9]+([dwmyh]|day|week|month|year|hour)/i,
-			},
-			format: {
-				type: 'string',
-				uppercase: true,
-				pattern: /[YD]{2,4}-M{2,4}-[YD]{2,4}/,
-			},
-		};
-
+	async list(opts) {
 		// validate
-		validateOrThrow(opts, schema);
+		listValidator.validate(opts);
 
 		// console.log(opts);
 		this.#make_glob_pattern(opts);
@@ -141,10 +132,86 @@ class GetLogs {
 		};
 
 		// glob
-        // console.log(this.globPattern);
-		let files = await glob(this.globPattern, globOpts);
+		// console.log(this.globPattern);
+		this.files = await glob(this.globPattern, globOpts);
 
-		return files
+		// console.log(opts);
+
+		// sort by ascending order always as a first step to:
+		// - reverse for DESC sorting
+		// - do nothing for ASC sorting
+		this.files = this.files.sort();
+
+		if (opts.sort == 'DESC') {
+			this.files = this.files.reverse();
+		}
+
+		//
+		return this.files;
+	}
+
+	async read(opts) {
+		readValidator.validate(opts);
+
+		await this.list(opts);
+
+		// set default parser
+		opts.parser =
+			opts.parser ||
+			function (v) {
+				return v;
+			};
+
+		this.readOpts = opts;
+
+		return this.continue();
+	}
+
+	continue() {
+		let self = this;
+		const { lines, parser } = this.readOpts;
+
+        this.selectedFiles = this.selectedFiles || [...this.files];
+
+		// pick file
+		this.file = this.file || this.files.shift();
+
+		// init liner
+		this.liner = this.liner || new lineByLine(this.file);
+
+		//read and parse lines
+		let linesArr = new Array(lines)
+			.fill(0)
+			.map((v) => {
+				let line = self.liner.next();
+
+				return line ? line.toString('ascii') : null;
+			})
+			.filter((l) => l !== null)
+			.map(parser);
+
+		// if no more data and we have finished this file
+		if (linesArr.length == 0) {
+
+			// if we still have another file to read
+			if (this.files.length > 0) {
+				this.file = null;
+				this.liner = null;
+
+                return this.continue()
+			}
+
+			return false;
+		}
+
+		return {
+			files: {
+                current:this.file,
+                selected:this.selectedFiles
+            },
+			lines: linesArr,
+			continue: this.continue.bind(self),
+		};
 	}
 }
 
