@@ -1,0 +1,32 @@
+{
+  "name": "get-logs",
+  "version": "1.0.0",
+  "description": "Get and read log files in a directory with advanced date based filtering",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "read",
+    "logs",
+    "filter",
+    "line-by-line",
+    "date"
+  ],
+  "author": "Anthony Mugendi <ngurumugz@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mugendi/get-logs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mugendi/get-logs/issues"
+  },
+  "homepage": "https://github.com/mugendi/get-logs#readme",
+  "dependencies": {
+    "date-order": "^1.0.0",
+    "dayjs": "^1.11.5",
+    "tiny-glob": "^0.2.9",
+    "validate-or-throw": "^1.0.0"
+  }
+}
