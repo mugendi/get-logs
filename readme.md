@@ -216,3 +216,9 @@ So far, all types of log files will be returned. Given our [Log Files](#readme-b
 That is where the ```nameFormat``` comes into play. By specifying that ```nameFormat="*error-{date}.log"``` then we ensure we only match error logs.
 
 Every time you call ```getLogs.list(options)``` or ```getLogs.read(options)```, what you are doing, whether you enter all the filtering options or defaults are used is filtering logs. Then reading those filtered.
+
+Ultimately, when all the filtering options are considered, a **glob pattern** is created and [tiny glob](https://www.npmjs.com/package/tiny-lob) is used to get the log files matched. 
+
+Generating glob patterns for `duration` and `dateFormat`is done with the help of [date order](https://www.npmjs.com/package/date-order) and of course [dayjs](https://www.npmjs.com/package/dayjs).
+
+Options are validated using [validate or throw](https://www.npmjs.com/package/validate-or-throw) which relies on [fastest validator](https://www.npmjs.com/package/fastest-validator).

@@ -26,7 +26,6 @@
   "dependencies": {
     "date-order": "^1.0.0",
     "dayjs": "^1.11.5",
-    "event-stream": "^4.0.1",
     "n-readlines": "^1.0.1",
     "tiny-glob": "^0.2.9",
     "validate-or-throw": "^1.0.0"
