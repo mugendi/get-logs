@@ -174,4 +174,4 @@ class GetLogs {
 
 }
 
-module.exports = (opts = {}) => new GetLogs(opts);
+module.exports = GetLogs;

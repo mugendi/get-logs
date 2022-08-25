@@ -27,7 +27,7 @@ const initOpts = {
 };
 
 // pass options
-const getLogs = GetLogs(initOpts);
+const getLogs = new GetLogs(initOpts);
 ```
 
 ### `GetLogs()` Init Options
