@@ -113,8 +113,11 @@ More often, what we want is to read log files, not list them. [Get-Logs](https:/
 			sort: 'DESC',
 		};
 
-		// now read logs
-		let resp = await getLogs.read(readOpts);
+		// get a handle to the reader
+		let reader = await getLogs.get(readOpts);
+
+    // Ok now read
+    let resp = reader.read();
 
 		// response
 		console.log(resp);
@@ -155,21 +158,22 @@ This will log an Object similar to the one below.
 - `fileNum` shows we are currently reading the first log file from those selected.
 - `lineNum: 1` indicates that this is the first line of `files.current`,
 -   We started with the latest log file because `sort="DESC"`.
--   Because we had `JSON.parse` as our parser while calling `read()` all our lines are parsed. Depending on how your logs are formatted, you might need to use another parser.
--   The response includes a `read` key whose value is a function we can call. Calling `read()` will step to the next batch of lines within the `file` till we have finished reading this file. 
+-   Because we had `JSON.parse` as our parser while calling `get()` all our lines are parsed. Depending on how your logs are formatted, you might need to use another parser.
+-   The response to `get()` includes a `read` key whose value is a function we can call. Calling `resp.read()` will step to the next batch of lines within the `file` till we have finished reading this file. 
 
-    After a file is read to the last line, and `read()` is called, then the next log file matched is loaded and reading continues.
+    After a file is read to the last line, and `resp.read()` is called, then the next log file matched is loaded and reading continues.
 
-    When all log files listed have been read to the very last line, then `read()` will return null. Be careful to thus test for ```read() !== null```.
+    When all log files listed have been read to the very last line, then `resp.read()` will return null. Be careful to thus test for `resp.read() !== null`.
 
     ### Using `read()` to read all logs
-    `read()` is very powerful and can be used to read every line of every matched log file within your [`logsDir`](#getlogs-init-options)
+    `resp.read()` is very powerful and can be used to read every line of every matched log file within your [`logsDir`](#getlogs-init-options)
 
     ```javascript
     ...
     // initial read
     // needed as this is what returns the response with a read() method
-    let resp = await getLogs.read(readOpts);
+    let reader = await getLogs.get(readOpts);
+    let resp;
 
     // do whatever with response
     doSomethingWithResp(resp)
@@ -181,7 +185,7 @@ This will log an Object similar to the one below.
     ```
 
 
-### `getLogs.read()` Options
+### `getLogs.get()` Options
 ---
 
 -   All [`list() options`](#getlogslist-options) plus 👇
