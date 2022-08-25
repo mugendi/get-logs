@@ -19,10 +19,10 @@ fastest-validator@^1.13.0:
   resolved "https://registry.yarnpkg.com/fastest-validator/-/fastest-validator-1.13.0.tgz#d144661d9c1546fe9a5e1b85d6544eed0da1fa19"
   integrity sha512-mDFnLPAQ1inK0Ql5xagQPgcdMP9TnUoun/O0lXjK6FJ1GEKI8CKEvcz0xXQmDWviUWHwLsSB1BSRindq1zc6Gw==
 
-fire-read@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/fire-read/-/fire-read-1.0.2.tgz#4e519c2a5b5b8aa84ec7e14d2f1398bbf1b7bec3"
-  integrity sha512-yClHo93fntbwrehalwUoivEb0QHSKvr/y+DJL60KmMCyip2MTcfkQsjdUueASKj3LMf5AI2VuPBClI3GVa2kJg==
+fire-read@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/fire-read/-/fire-read-1.0.3.tgz#dbefb1aa7466af508c3d00276cb4d6e4a140869a"
+  integrity sha512-q4ps7dPrwnljezhgzu3AjoB3tA0lbwovv8imSaaj15gXDAZCAemmHy5wBprbaMbvxBkVNdPaj7SsjSiGeKO/Zg==
   dependencies:
     n-readlines "^1.0.1"
     validate-or-throw "^1.0.2"

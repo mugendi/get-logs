@@ -16,7 +16,7 @@ const dayjs = require('dayjs'),
 	glob = require('tiny-glob'),
 	fs = require('fs'),
 	dateOrder = require('date-order'),
-	fireRead = require('/home/mugz/projects/node/my-modules/fire-read');
+	fireRead = require('fire-read');
 
 // toObject plugin
 dayjs.extend(require('dayjs/plugin/toObject'));
