@@ -1,6 +1,6 @@
 {
   "name": "get-logs",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Get and read log files in a directory with advanced date based filtering",
   "main": "index.js",
   "scripts": {
