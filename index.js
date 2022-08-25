@@ -16,7 +16,7 @@ const dayjs = require('dayjs'),
 	glob = require('tiny-glob'),
 	fs = require('fs'),
 	dateOrder = require('date-order'),
-	lineByLine = require('n-readlines');
+	fireRead = require('fire-read');
 
 // toObject plugin
 dayjs.extend(require('dayjs/plugin/toObject'));
@@ -27,6 +27,7 @@ const numSort = (a, b) => a - b;
 const optsValidator = require('./lib/validate/opts');
 const listValidator = require('./lib/validate/list');
 const readValidator = require('./lib/validate/read');
+
 
 class GetLogs {
 	constructor(opts) {
@@ -162,57 +163,15 @@ class GetLogs {
 				return v;
 			};
 
-		this.readOpts = opts;
-
-		return this.continue();
-	}
-
-	continue() {
-		let self = this;
-		const { lines, parser } = this.readOpts;
-
-        this.selectedFiles = this.selectedFiles || [...this.files];
-
-		// pick file
-		this.file = this.file || this.files.shift();
-
-		// init liner
-		this.liner = this.liner || new lineByLine(this.file);
-
-		//read and parse lines
-		let linesArr = new Array(lines)
-			.fill(0)
-			.map((v) => {
-				let line = self.liner.next();
-
-				return line ? line.toString('ascii') : null;
-			})
-			.filter((l) => l !== null)
-			.map(parser);
-
-		// if no more data and we have finished this file
-		if (linesArr.length == 0) {
-
-			// if we still have another file to read
-			if (this.files.length > 0) {
-				this.file = null;
-				this.liner = null;
-
-                return this.continue()
-			}
-
-			return false;
-		}
-
-		return {
-			files: {
-                current:this.file,
-                selected:this.selectedFiles
-            },
-			lines: linesArr,
-			continue: this.continue.bind(self),
+		this.readOpts = {
+			files : this.files,
+			lines : opts.lines,
+			parser: opts.parser
 		};
+
+		return new fireRead(this.readOpts);
 	}
+
 }
 
 module.exports = (opts = {}) => new GetLogs(opts);

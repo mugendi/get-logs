@@ -135,6 +135,8 @@ This will log an Object similar to the one below.
       '/logs/info-2021-12-04.log'
     ]
   },
+  fileNum: 1,
+  lineNum: 1,
   lines: [
     {
       level: 'info',
@@ -142,36 +144,38 @@ This will log an Object similar to the one below.
       timestamp: '2022-08-24 09:53:53.373 PM'
     }
   ],
-  continue: [Function: bound continue]
+  read: [Function: bound read]
 }
 ```
 
 **Note:**
 
--   We have read only one line because `lines=1`
+-   We have read only one line because `lines=1`.
 -   All log files selected are listed with the one currently being read shown by `files.current`.
+- `fileNum` shows we are currently reading the first log file from those selected.
+- `lineNum: 1` indicates that this is the first line of `files.current`,
 -   We started with the latest log file because `sort="DESC"`.
 -   Because we had `JSON.parse` as our parser while calling `read()` all our lines are parsed. Depending on how your logs are formatted, you might need to use another parser.
--   The response includes a `continue` key whose value is a function we can call. Calling `continue()` will step to the next batch of lines within the `file` till we have finished reading this file. 
+-   The response includes a `read` key whose value is a function we can call. Calling `read()` will step to the next batch of lines within the `file` till we have finished reading this file. 
 
-    After a file is read to the last line, and `continue()` is called, then the next log file matched is loaded and reading continues.
+    After a file is read to the last line, and `read()` is called, then the next log file matched is loaded and reading continues.
 
-    When all log files listed have been read to the very last line, then `continue()` will return null. Be careful to thus test for ```continue() !== null```.
+    When all log files listed have been read to the very last line, then `read()` will return null. Be careful to thus test for ```read() !== null```.
 
-    ### Using `continue()` to read all logs
-    `continue()` is very powerful and can be used to read every line of every matched log file within your [`logsDir`](#getlogs-init-options)
+    ### Using `read()` to read all logs
+    `read()` is very powerful and can be used to read every line of every matched log file within your [`logsDir`](#getlogs-init-options)
 
     ```javascript
     ...
     // initial read
-    // needed as this is what returns the response with a continue() method
+    // needed as this is what returns the response with a read() method
     let resp = await getLogs.read(readOpts);
 
     // do whatever with response
     doSomethingWithResp(resp)
 
     // now loop through till resp is null
-    while ((resp = resp.continue())) {
+    while ((resp = resp.read())) {
         doSomethingWithResp(resp)
     }
     ```
@@ -182,7 +186,7 @@ This will log an Object similar to the one below.
 
 -   All [`list() options`](#getlogslist-options) plus 👇
 
--   **`lines:`** The number of lines to read from each log at once. Note that log files can be very huge so [n-readlines](https://www.npmjs.com/package/n-readlines) is used to consume them line-by-line. Defaults to 20.
+-   **`lines:`** The number of lines to read from each log at once. Note that log files can be very huge so [fire-read](https://www.npmjs.com/package/fire-read) is used to consume them line-by-line. Defaults to 20.
 
 -   **`parser:`** The function used to parse log files. Defaults to `JSON.parse`. Depending on how your logs are formatted, enter a function to parse the same. If no parsing is desired, then use:
     ```javascript
@@ -222,3 +226,5 @@ Ultimately, when all the filtering options are considered, a **glob pattern** is
 Generating glob patterns for `duration` and `dateFormat`is done with the help of [date order](https://www.npmjs.com/package/date-order) and of course [dayjs](https://www.npmjs.com/package/dayjs).
 
 Options are validated using [validate or throw](https://www.npmjs.com/package/validate-or-throw) which relies on [fastest validator](https://www.npmjs.com/package/fastest-validator).
+
+Optimally reading files line by line is provided by [fire-read](https://www.npmjs.com/package/fire-read) which is powered by the amazing [n-readlines](https://www.npmjs.com/package/n-readlines)

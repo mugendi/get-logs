@@ -19,6 +19,14 @@ fastest-validator@^1.13.0:
   resolved "https://registry.yarnpkg.com/fastest-validator/-/fastest-validator-1.13.0.tgz#d144661d9c1546fe9a5e1b85d6544eed0da1fa19"
   integrity sha512-mDFnLPAQ1inK0Ql5xagQPgcdMP9TnUoun/O0lXjK6FJ1GEKI8CKEvcz0xXQmDWviUWHwLsSB1BSRindq1zc6Gw==
 
+fire-read@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fire-read/-/fire-read-1.0.0.tgz#f462fcd3c44ce29699fd1304c10b0b6f657dfb38"
+  integrity sha512-VkSFA4cVSjHXUWnCg/lR7dE8UbYhcWNjoYTdc6Hwf4wz2D70HIivZKAy8oB3ry8jCb9K0QokGLBTASBkmR18pw==
+  dependencies:
+    n-readlines "^1.0.1"
+    validate-or-throw "^1.0.2"
+
 globalyzer@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/globalyzer/-/globalyzer-0.1.0.tgz#cb76da79555669a1519d5a8edf093afaa0bf1465"
@@ -42,7 +50,7 @@ tiny-glob@^0.2.9:
     globalyzer "0.1.0"
     globrex "^0.1.2"
 
-validate-or-throw@^1.0.0:
+validate-or-throw@^1.0.0, validate-or-throw@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/validate-or-throw/-/validate-or-throw-1.0.2.tgz#8f350dd41bc9c63b07e3504c4040580023831d5e"
   integrity sha512-9b0J0TfEzr+lQKL7J+cvuQlhW5UodcYOZvNaWHn3HuTceaXpDfQ0g6Yifo6TFtpiV6DlurwT8mMLkox3GlzF4A==

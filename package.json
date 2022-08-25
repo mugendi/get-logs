@@ -26,7 +26,7 @@
   "dependencies": {
     "date-order": "^1.0.0",
     "dayjs": "^1.11.5",
-    "n-readlines": "^1.0.1",
+    "fire-read": "^1.0.0",
     "tiny-glob": "^0.2.9",
     "validate-or-throw": "^1.0.0"
   }
