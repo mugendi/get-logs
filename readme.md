@@ -66,8 +66,8 @@ This will log the following array.
 
 ```javascript
 [
-	'/home/mugz/.@fetch/logs/info-2021-12-04.log',
-	'/home/mugz/.@fetch/logs/info-2022-08-24.log',
+	'/logs/info-2021-12-04.log',
+	'/logs/info-2022-08-24.log',
 ];
 ```
 
