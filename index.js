@@ -16,7 +16,7 @@ const dayjs = require('dayjs'),
 	glob = require('tiny-glob'),
 	fs = require('fs'),
 	dateOrder = require('date-order'),
-	fireRead = require('fire-read');
+	fireRead = require('/home/mugz/projects/node/my-modules/fire-read');
 
 // toObject plugin
 dayjs.extend(require('dayjs/plugin/toObject'));
@@ -27,7 +27,6 @@ const numSort = (a, b) => a - b;
 const optsValidator = require('./lib/validate/opts');
 const listValidator = require('./lib/validate/list');
 const readValidator = require('./lib/validate/read');
-
 
 class GetLogs {
 	constructor(opts) {
@@ -156,6 +155,24 @@ class GetLogs {
 
 		await this.list(opts);
 
+		// if no files
+		if (this.files.length == 0 || 1 == 1) {
+			// if there are no files...
+			let resp = {
+				files: {
+					current: null,
+					selected: [],
+				},
+				fileNum: 0,
+				lineNum: 0,
+				lines: null,
+			};
+
+			resp.read = () => resp;
+
+			return resp;
+		}
+
 		// set default parser
 		opts.parser =
 			opts.parser ||
@@ -164,14 +181,13 @@ class GetLogs {
 			};
 
 		this.readOpts = {
-			files : this.files,
-			lines : opts.lines,
-			parser: opts.parser
+			files: this.files,
+			lines: opts.lines,
+			parser: opts.parser,
 		};
 
 		return new fireRead(this.readOpts);
 	}
-
 }
 
 module.exports = GetLogs;
