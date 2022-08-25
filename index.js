@@ -156,7 +156,7 @@ class GetLogs {
 		await this.list(opts);
 
 		// if no files
-		if (this.files.length == 0 || 1 == 1) {
+		if (this.files.length == 0 ) {
 			// if there are no files...
 			let resp = {
 				files: {
