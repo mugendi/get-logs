@@ -151,7 +151,7 @@ class GetLogs {
 		return this.files;
 	}
 
-	async read(opts) {
+	async get(opts) {
 		readValidator.validate(opts);
 
 		await this.list(opts);
