@@ -153,6 +153,8 @@ class GetLogs {
 	async get(opts) {
 		readValidator.validate(opts);
 
+		// console.log(opts);
+
 		await this.list(opts);
 
 		// if no files
@@ -172,6 +174,9 @@ class GetLogs {
 
 			return resp;
 		}
+
+		// limit files as set in opts.limit
+		this.files = this.files.slice(0, opts.limit)
 
 		// set default parser
 		opts.parser =
