@@ -3,16 +3,19 @@
 List log files contained in a directory, use advanced date and name filters to select specific log files and read the files in a manner that does not burn your RAM 😜
 
 > &nbsp;
+>
 > ## Readme by Example
-> To fully grasp how this module works. Let as imagine that we have a directory ```dir``` which has the following log files:
+>
+> To fully grasp how this module works. Let as imagine that we have a directory `dir` which has the following log files:
+>
 > ```txt
 > - /logs/error-2021-12-17.log
 > - /logs/error-2022-08-24.log
 > - /logs/info-2021-12-04.log
 > - /logs/info-2022-08-24.log
->```
+> ```
+>
 > &nbsp;
-
 
 ## Initializing
 
@@ -31,14 +34,16 @@ const getLogs = new GetLogs(initOpts);
 ```
 
 ### `GetLogs()` Init Options
+
 ---
 
-- **`logsDir:`** The directory within which your logs are saved. This option must be entered and be a valid directory path.
-- **`dateFormat:`** The date format used while saving your logs. Defaults to 'YYYY-MM-DD';
+-   **`logsDir:`** The directory within which your logs are saved. This option must be entered and be a valid directory path.
+-   **`dateFormat:`** The date format used while saving your logs. Defaults to 'YYYY-MM-DD';
 
-___
+---
 
 ## List Logs
+
 Sometimes you want to see which log files have been generated over a certain duration.
 
 ```javascript
@@ -65,18 +70,17 @@ Sometimes you want to see which log files have been generated over a certain dur
 This will log the following array.
 
 ```javascript
-[
-	'/logs/info-2021-12-04.log',
-	'/logs/info-2022-08-24.log',
-];
+['/logs/info-2021-12-04.log', '/logs/info-2022-08-24.log'];
 ```
 
 **Note:**
+
 -   Because `nameFormat='info-{date}.log'` we only listed those logs with a similar format.
 -   Since `duration='1year`, logs from Dec 2021 to Aug 2022 were listed.
 -   Since `sort='ASC'` then we started with the _earliest_ logs.
 
 ### `getLogs.list()` Options
+
 ---
 
 -   **`duration:`** This determines how far back we intend to read logs. Defaults to "3days".
@@ -95,7 +99,7 @@ This will log the following array.
 
 -   **`sort:`** Determines the order by which log files are listed. Defaults to "DESC";
 
-___
+---
 
 ## Reading Logs
 
@@ -109,6 +113,7 @@ More often, what we want is to read log files, not list them. [Get-Logs](https:/
 			duration: '1year',
 			nameFormat: 'info-{date}.log',
 			lines: 1,
+			limit: 5,
 			parser: JSON.parse,
 			sort: 'DESC',
 		};
@@ -116,8 +121,8 @@ More often, what we want is to read log files, not list them. [Get-Logs](https:/
 		// get a handle to the reader
 		let reader = await getLogs.get(readOpts);
 
-    // Ok now read
-    let resp = reader.read();
+		// Ok now read
+		let resp = reader.read();
 
 		// response
 		console.log(resp);
@@ -154,18 +159,21 @@ This will log an Object similar to the one below.
 **Note:**
 
 -   We have read only one line because `lines=1`.
+
 -   All log files selected are listed with the one currently being read shown by `files.current`.
-- `fileNum` shows we are currently reading the first log file from those selected.
-- `lineNum: 1` indicates that this is the first line of `files.current`,
+-   `fileNum` shows we are currently reading the first log file from those selected.
+-   `lineNum: 1` indicates that this is the first line of `files.current`,
 -   We started with the latest log file because `sort="DESC"`.
+-   By using `limit=5` we can only read 5 files at a time. These will be the first 5 files based on our sorting.
 -   Because we had `JSON.parse` as our parser while calling `get()` all our lines are parsed. Depending on how your logs are formatted, you might need to use another parser.
--   The response to `get()` includes a `read` key whose value is a function we can call. Calling `resp.read()` will step to the next batch of lines within the `file` till we have finished reading this file. 
+-   The response to `get()` includes a `read` key whose value is a function we can call. Calling `resp.read()` will step to the next batch of lines within the `file` till we have finished reading this file.
 
     After a file is read to the last line, and `resp.read()` is called, then the next log file matched is loaded and reading continues.
 
     When all log files listed have been read to the very last line, then `resp.read()` will return null. Be careful to thus test for `resp.read() !== null`.
 
     ### Using `read()` to read all logs
+
     `resp.read()` is very powerful and can be used to read every line of every matched log file within your [`logsDir`](#getlogs-init-options)
 
     ```javascript
@@ -184,13 +192,15 @@ This will log an Object similar to the one below.
     }
     ```
 
-
 ### `getLogs.get()` Options
+
 ---
 
 -   All [`list() options`](#getlogslist-options) plus 👇
 
 -   **`lines:`** The number of lines to read from each log at once. Note that log files can be very huge so [fire-read](https://www.npmjs.com/package/fire-read) is used to consume them line-by-line. Defaults to 20.
+
+-   **`limit:`** Determines the total number of log files that can be read at a go. This means that even if 20 files match our `dateFormat` and are within the stipulated `duration`, we will only read as many as indicated by the `limit` option;
 
 -   **`parser:`** The function used to parse log files. Defaults to `JSON.parse`. Depending on how your logs are formatted, enter a function to parse the same. If no parsing is desired, then use:
     ```javascript
@@ -199,8 +209,7 @@ This will log an Object similar to the one below.
     }
     ```
 
-
-___
+---
 
 ## Understand Filtering Files
 
@@ -208,24 +217,25 @@ One of the main principles of this module is the ability to filter log files. It
 
 ### Level 1. During Initialization
 
-Basically, when you **initialize** this module and enter a ```dateFormat``` option, you filter out all files that do not have that specific date format in their names. 
+Basically, when you **initialize** this module and enter a `dateFormat` option, you filter out all files that do not have that specific date format in their names.
 
 It is therefore assumed that all your log files (for many reasons such as log rotation) have a date in their name. Most logging modules such as [winston](https://www.npmjs.com/package/winston) offer that.
 
 If your logs are not named using such a convection, then this module is not for you 😓.
 
-### Level 2. During Log Listing 
-When you call ```getLogs.list(options)``` then a second level of filtering happens based on the options you provide.
+### Level 2. During Log Listing
 
-The ```duration``` option filters out all files whose dates (within their file names of course) falls between now and the past ```duration``` entered. So if ```duration='3d'```, then all logs generated in the past **3 days** will be returned.
+When you call `getLogs.list(options)` then a second level of filtering happens based on the options you provide.
 
-So far, all types of log files will be returned. Given our [Log Files](#readme-by-example) above, all **info** and **error** logs matching our ```dateFormat``` and ```duration``` filters will be returned. But what if we only want error logs?
+The `duration` option filters out all files whose dates (within their file names of course) falls between now and the past `duration` entered. So if `duration='3d'`, then all logs generated in the past **3 days** will be returned.
 
-That is where the ```nameFormat``` comes into play. By specifying that ```nameFormat="*error-{date}.log"``` then we ensure we only match error logs.
+So far, all types of log files will be returned. Given our [Log Files](#readme-by-example) above, all **info** and **error** logs matching our `dateFormat` and `duration` filters will be returned. But what if we only want error logs?
 
-Every time you call ```getLogs.list(options)``` or ```getLogs.read(options)```, what you are doing, whether you enter all the filtering options or defaults are used is filtering logs. Then reading those filtered.
+That is where the `nameFormat` comes into play. By specifying that `nameFormat="*error-{date}.log"` then we ensure we only match error logs.
 
-Ultimately, when all the filtering options are considered, a **glob pattern** is created and [tiny glob](https://www.npmjs.com/package/tiny-lob) is used to get the log files matched. 
+Every time you call `getLogs.list(options)` or `getLogs.read(options)`, what you are doing, whether you enter all the filtering options or defaults are used is filtering logs. Then reading those filtered.
+
+Ultimately, when all the filtering options are considered, a **glob pattern** is created and [tiny glob](https://www.npmjs.com/package/tiny-lob) is used to get the log files matched.
 
 Generating glob patterns for `duration` and `dateFormat`is done with the help of [date order](https://www.npmjs.com/package/date-order) and of course [dayjs](https://www.npmjs.com/package/dayjs).
 
